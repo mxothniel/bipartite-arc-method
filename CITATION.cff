@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this method or software, please cite it as below."
+title: "The Othniel Etienne Bipartite-Arc Method"
+type: software
+version: 1.0.0
+date-released: 2026-11-12
+authors:
+  - family-names: "Etienne"
+    given-names: "Othniel"
+    affiliation: "Fondasyon Ann Inove"
+    orcid: "https://orcid.org/0009-0005-4021-2301"
+repository-code: "https://github.com/mxothniel/bipartite-arc-method"
+url: "https://anninove.org"
+license: MIT
+keywords:
+  - handshake problem
+  - combinatorics
+  - bipartite graph
+  - arc diagram
+  - mathematics education
+  - Haiti
+abstract: "A visual method and interactive web tool that counts pairs (such as handshakes) by splitting nodes into two rows joined by straight lines and arcs. Open educational resource of Fondasyon Ann Inove, available in English, French, Haitian Creole and Spanish."

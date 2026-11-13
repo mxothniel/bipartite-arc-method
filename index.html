@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Othniel Etienne Bipartite-Arc Method — Handshake Problem</title>
+<link rel="icon" href="https://anninove.org/img/ANN-INOVE-ICON-512-yellow-100x100.png" sizes="32x32">
+<link rel="icon" href="https://anninove.org/img/ANN-INOVE-ICON-512-yellow-300x300.png" sizes="192x192">
+<link rel="apple-touch-icon" href="https://anninove.org/img/ANN-INOVE-ICON-512-yellow-300x300.png">
+<meta name="msapplication-TileImage" content="https://anninove.org/img/ANN-INOVE-ICON-512-yellow-300x300.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+body { margin: 0; background: #f1efe9; padding: 20px 12px; }
+
+.hs-app {
+  --paper: #faf9f6;
+  --grid: #e4e7e2;
+  --red: #b3392c;
+  --teal: #146b79;
+  --ink: #232323;
+  --amber: #c98a2c;
+
+  font-family: 'Inter', sans-serif;
+  color: var(--ink);
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 32px 32px,
+    var(--paper);
+  border-radius: 4px;
+  padding: 24px 32px 36px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.hs-topbar { display: flex; justify-content: flex-end; gap: 6px; margin-bottom: 4px; }
+.lang-btn {
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 4px 9px;
+  border: 1.5px solid var(--ink); background: transparent; color: var(--ink);
+  border-radius: 3px; cursor: pointer;
+}
+.lang-btn.active { background: var(--ink); color: var(--paper); }
+
+.hs-logo-wrap { display: flex; justify-content: center; margin: 2px 0 10px; }
+.hs-logo-wrap img { height: 150px; width: auto; }
+
+.hs-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  border-bottom: 1.5px solid var(--ink); padding-bottom: 14px; margin-bottom: 6px;
+  flex-wrap: wrap; gap: 10px;
+}
+.hs-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; letter-spacing: -0.01em; }
+.hs-formula {
+  font-family: 'IBM Plex Mono', monospace; font-size: 15px; background: var(--ink);
+  color: var(--paper); padding: 6px 12px; border-radius: 3px; white-space: nowrap;
+}
+.hs-formula .val { color: #f2d49b; font-weight: 600; }
+.hs-nnote { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6b6b6b; margin: 6px 0 18px; }
+
+.hs-tabs { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+.hs-tab {
+  font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 8px 14px;
+  border: 1.5px solid var(--ink); background: transparent; cursor: pointer;
+  border-radius: 3px; color: var(--ink);
+}
+.hs-tab.active { background: var(--ink); color: var(--paper); }
+
+.hs-panel { display: none; }
+.hs-panel.active { display: block; }
+
+.hs-radio-row {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  font-family: 'IBM Plex Mono', monospace; font-size: 13px; margin-bottom: 10px;
+}
+.hs-radio-row label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.hs-radio-row input { accent-color: var(--amber); }
+
+.hs-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.hs-input {
+  font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 8px 10px;
+  border: 1.5px solid var(--ink); border-radius: 3px; width: 110px; background: white;
+}
+.hs-input:focus { outline: 2px solid var(--amber); outline-offset: 1px; }
+
+.hs-btn {
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px; padding: 9px 16px;
+  border: none; border-radius: 3px; cursor: pointer; background: var(--amber);
+  color: #2a1d05; transition: transform 0.08s ease;
+}
+.hs-btn:hover { transform: translateY(-1px); }
+.hs-btn:active { transform: translateY(0); }
+.hs-btn.secondary { background: transparent; border: 1.5px solid var(--ink); color: var(--ink); }
+.hs-btn.ghost { background: transparent; border: 1.5px dashed var(--teal); color: var(--teal); }
+
+.hs-msg { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--red); min-height: 18px; }
+
+.hs-toggles {
+  display: flex; gap: 18px; margin: 4px 0 16px; font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px; flex-wrap: wrap; align-items: center;
+}
+.hs-toggles label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.hs-toggles input { accent-color: var(--amber); }
+
+.hs-canvas-wrap { background: white; border: 1.5px solid var(--ink); border-radius: 4px; overflow: hidden; }
+svg#graph { display: block; width: 100%; height: auto; }
+
+.node-label { font-family: 'Fraunces', serif; font-weight: 600; font-size: 20px; fill: var(--red); }
+.num-label { font-family: 'IBM Plex Mono', monospace; font-size: 13px; fill: var(--teal); }
+.num-bg { fill: white; opacity: 0.88; }
+
+.hide-letters .node-label { display: none; }
+.hide-numbers .num-label, .hide-numbers .num-bg, .hide-numbers .ext-line { display: none; }
+
+.hs-below-canvas {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 12px; flex-wrap: wrap; gap: 10px;
+}
+.hs-footer-note { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6b6b6b; max-width: 640px; }
+
+.hs-method { margin-top: 34px; padding-top: 22px; border-top: 1.5px solid var(--ink); }
+.hs-method h2 { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; margin: 0 0 14px; }
+.hs-method p { font-size: 14.5px; line-height: 1.65; color: #333; margin: 0 0 14px; }
+.hs-method h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; margin: 22px 0 10px; }
+.hs-apps { margin: 0 0 14px; padding-left: 22px; }
+.hs-apps li { font-size: 14.5px; line-height: 1.6; color: #333; margin-bottom: 7px; }
+.hs-method p.hs-apps-note { font-weight: 600; color: var(--ink); border-left: 4px solid var(--amber); padding: 6px 0 6px 12px; background: rgba(201,138,44,0.08); }
+
+.hs-art-row { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; margin: 6px 0 10px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+.hs-art-row label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.hs-art-row select { font-family: inherit; font-size: 13px; padding: 5px 6px; border: 1.5px solid var(--ink); border-radius: 3px; background: white; }
+.hs-art-row input[type=range] { accent-color: var(--amber); width: 120px; }
+.hs-art-row input[type=checkbox] { accent-color: var(--amber); }
+.hs-canvas-wrap.bg-transparent { background: repeating-conic-gradient(#e6e6e6 0% 25%, #ffffff 0% 50%) 50% / 20px 20px !important; }
+.hide-art-cross .art-cross, .hide-art-arc .art-arc { display: none; }
+.hs-breakdown { margin: 4px 0 10px; border: 1.5px solid var(--ink); border-radius: 4px; background: white; max-width: 560px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+.hs-breakdown .bd-row { display: flex; justify-content: space-between; gap: 14px; padding: 7px 12px; border-bottom: 1px solid #e4e7e2; }
+.hs-breakdown .bd-row b { white-space: nowrap; }
+.hs-breakdown .bd-row.total { background: var(--ink); color: var(--paper); border-bottom: none; }
+.hs-breakdown .bd-row.total b { color: #f2d49b; }
+.hs-breakdown .bd-identity { padding: 8px 12px; color: var(--teal); font-weight: 600; border-top: 1.5px solid var(--ink); }
+details.hs-acc { border: 1.5px solid var(--ink); border-radius: 4px; background: white; margin: 14px 0; }
+details.hs-acc > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 13px 16px; font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; line-height: 1.3; }
+details.hs-acc > summary::-webkit-details-marker { display: none; }
+details.hs-acc > summary:hover { background: rgba(201,138,44,0.10); }
+details.hs-acc > summary:focus-visible { outline: 2px solid var(--amber); outline-offset: -2px; }
+details.hs-acc .arrow { flex: none; width: 22px; height: 22px; transition: transform 0.2s ease; }
+details.hs-acc[open] > summary .arrow { transform: rotate(180deg); }
+details.hs-acc[open] > summary { border-bottom: 1.5px solid var(--ink); }
+.hs-acc-body { padding: 14px 18px 6px; }
+.hs-acc-body ol.hs-apps { padding-left: 22px; }
+.gp-ex { display: block; margin-top: 6px; padding-left: 10px; border-left: 3px solid var(--amber); }
+.gp-ex em { font-style: normal; font-weight: 600; color: var(--teal); }
+
+.hs-footer-brand { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 30px; padding-top: 18px; border-top: 1px solid #d8dbd6; }
+.hs-footer-brand img { height: 50px; width: auto; display: block; }
+.hs-footer-brand a.txt { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: var(--ink); text-decoration: none; border-bottom: 1.5px solid var(--amber); }
+.hs-footer-brand a.txt:hover { color: var(--teal); }
+#hsApp[data-mode="groups"] .hs-footer-note { display: none; }
+.hs-export-row { margin-left: auto; }
+.hs-export-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+@media (max-width: 600px) { .hs-app { padding: 16px 14px 28px; } .hs-title { font-size: 22px; } }
+</style>
+</head>
+<body>
+
+<div class="hs-app" id="hsApp" data-mode="solve">
+  <div class="hs-topbar">
+    <button class="lang-btn active" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="fr">FR</button>
+    <button class="lang-btn" data-lang="kr">KR</button>
+    <button class="lang-btn" data-lang="es">ES</button>
+  </div>
+
+  <div class="hs-logo-wrap">
+    <a href="https://anninove.org/" target="_blank" rel="noopener noreferrer" title="Fondasyon Ann Inove">
+      <img src="https://anninove.org/img/anninove-logo-yellow-300x232.png" alt="Fondasyon Ann Inove">
+    </a>
+  </div>
+
+  <div class="hs-header">
+    <div class="hs-title" data-i18n="appTitle">The Handshake Problem</div>
+    <div class="hs-formula">n(n−1)/2 = <span class="val" id="formulaVal">0</span></div>
+  </div>
+  <div class="hs-nnote" data-i18n="nNote"></div>
+
+  <div class="hs-tabs">
+    <button class="hs-tab active" data-tab="solve" data-i18n="tabSolve"></button>
+    <button class="hs-tab" data-tab="build" data-i18n="tabBuild"></button>
+    <button class="hs-tab" data-tab="groups" data-i18n="tabGroups"></button>
+    <button class="hs-tab" data-tab="art" data-i18n="tabArt"></button>
+  </div>
+
+  <div class="hs-panel active" id="panel-solve">
+    <div class="hs-radio-row">
+      <span data-i18n="knownLabel"></span>
+      <label><input type="radio" name="solveMode" value="handshakes" checked> <span data-i18n="knownHandshakes"></span></label>
+      <label><input type="radio" name="solveMode" value="people"> <span data-i18n="knownPeople"></span></label>
+    </div>
+    <div class="hs-controls">
+      <input type="number" min="1" class="hs-input" id="totalInput" data-i18n-ph="inputPlaceholder">
+      <button class="hs-btn" id="solveBtn" data-i18n="buildBtn"></button>
+      <button class="hs-btn secondary" id="resetBtn1" data-i18n="resetBtn"></button>
+    </div>
+    <div class="hs-msg" id="solveMsg"></div>
+  </div>
+
+  <div class="hs-panel" id="panel-build">
+    <div class="hs-controls">
+      <button class="hs-btn" id="addBtn" data-i18n="addBtn"></button>
+      <button class="hs-btn secondary" id="resetBtn2" data-i18n="resetBtn"></button>
+    </div>
+  </div>
+
+  <div class="hs-panel" id="panel-groups">
+    <div class="hs-controls">
+      <span data-i18n="groupALabel" style="font-family:'IBM Plex Mono',monospace;font-size:13px;"></span>
+      <input type="number" min="1" class="hs-input" id="groupA" value="12" style="width:80px;">
+      <span data-i18n="groupBLabel" style="font-family:'IBM Plex Mono',monospace;font-size:13px;"></span>
+      <input type="number" min="1" class="hs-input" id="groupB" value="8" style="width:80px;">
+      <button class="hs-btn" id="groupsBuildBtn" data-i18n="buildBtn"></button>
+      <button class="hs-btn secondary" id="resetBtn4" data-i18n="resetBtn"></button>
+    </div>
+    <div class="hs-msg" id="groupsMsg"></div>
+    <div class="hs-breakdown" id="groupsBreakdown">
+      <div class="bd-row"><span data-i18n="bdTop"></span><b id="bdTopVal">0 / 0</b></div>
+      <div class="bd-row"><span data-i18n="bdBottom"></span><b id="bdBottomVal">0 / 0</b></div>
+      <div class="bd-row"><span data-i18n="bdLines"></span><b id="bdLinesVal">0 / 0</b></div>
+      <div class="bd-row total"><span data-i18n="bdTotal"></span><b id="bdTotalVal">0 / 0</b></div>
+      <div class="bd-identity" id="bdIdentity"></div>
+    </div>
+    <div class="hs-nnote" data-i18n="groupsHint"></div>
+  </div>
+
+  <div class="hs-panel" id="panel-art">
+    <div class="hs-controls">
+      <span data-i18n="artPeopleLabel" style="font-family:'IBM Plex Mono',monospace;font-size:13px;"></span>
+      <input type="number" min="2" class="hs-input" id="artInput" value="60">
+      <button class="hs-btn" id="artBuildBtn" data-i18n="artBuildBtn"></button>
+      <button class="hs-btn secondary" id="resetBtn3" data-i18n="resetBtn"></button>
+    </div>
+    <div class="hs-art-row">
+      <label><span data-i18n="artPalette"></span>
+        <select id="artPalette">
+          <option value="brand" data-i18n="palBrand"></option>
+          <option value="haiti" data-i18n="palHaiti"></option>
+          <option value="sunset" data-i18n="palSunset"></option>
+          <option value="ocean" data-i18n="palOcean"></option>
+          <option value="ink" data-i18n="palInk"></option>
+          <option value="gold" data-i18n="palGold"></option>
+        </select></label>
+      <label><span data-i18n="artBackground"></span>
+        <select id="artBg">
+          <option value="white" data-i18n="bgWhite"></option>
+          <option value="paper" data-i18n="bgPaper"></option>
+          <option value="night" data-i18n="bgNight"></option>
+          <option value="transparent" data-i18n="bgTransparent"></option>
+        </select></label>
+      <label><span data-i18n="artWeight"></span> <input type="range" id="artWeight" min="0.3" max="2.5" step="0.1" value="1"></label>
+    </div>
+    <div class="hs-art-row">
+      <label><input type="checkbox" id="artShowLines" checked> <span data-i18n="artLines"></span></label>
+      <label><input type="checkbox" id="artShowArcs" checked> <span data-i18n="artArcs"></span></label>
+      <label><input type="checkbox" id="artSignature" checked> <span data-i18n="artSignature"></span></label>
+    </div>
+    <div class="hs-nnote" data-i18n="artHint"></div>
+    <div class="hs-msg" id="artMsg"></div>
+  </div>
+
+  <div class="hs-toggles" id="togglesRow">
+    <label><input type="checkbox" id="toggleLetters" checked> <span data-i18n="showLetters"></span></label>
+    <label><input type="checkbox" id="toggleNumbers" checked> <span data-i18n="showNumbers"></span></label>
+    <label><input type="checkbox" id="toggleStep"> <span data-i18n="stepThrough"></span></label>
+    <button class="hs-btn ghost" id="nextBtn" style="display:none;"></button>
+  </div>
+
+  <div class="hs-canvas-wrap">
+    <svg id="graph" viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <div class="hs-below-canvas">
+    <div class="hs-footer-note" data-i18n="footerNote"></div>
+    <div class="hs-export-row">
+      <button class="hs-btn secondary" id="exportBtn" data-i18n="exportSvg"></button>
+      <button class="hs-btn secondary" id="exportPngBtn" data-i18n="exportPng"></button>
+    </div>
+  </div>
+
+  <div class="hs-method">
+    <h2 data-i18n="methodTitle"></h2>
+    <p data-i18n="methodP1"></p>
+    <details class="hs-acc" id="accHandshakes">
+      <summary><span data-i18n="gpTitle"></span><svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="hs-acc-body">
+        <p data-i18n="gpIntro"></p>
+        <ol class="hs-apps">
+        <li><strong data-i18n="gp1t"></strong> <span data-i18n="gp1d"></span>
+          <span class="gp-ex"><em data-i18n="gpExLabel"></em> <span data-i18n="gp1x"></span></span>
+        </li>
+        <li><strong data-i18n="gp2t"></strong> <span data-i18n="gp2d"></span>
+          <span class="gp-ex"><em data-i18n="gpExLabel"></em> <span data-i18n="gp2x"></span></span>
+        </li>
+        <li><strong data-i18n="gp3t"></strong> <span data-i18n="gp3d"></span>
+          <span class="gp-ex"><em data-i18n="gpExLabel"></em> <span data-i18n="gp3x"></span></span>
+        </li>
+        <li><strong data-i18n="gp4t"></strong> <span data-i18n="gp4d"></span>
+          <span class="gp-ex"><em data-i18n="gpExLabel"></em> <span data-i18n="gp4x"></span></span>
+          <span class="gp-ex"><em data-i18n="gpExLabel"></em> <span data-i18n="gp4y"></span></span>
+        </li>
+        <li><strong data-i18n="gp5t"></strong> <span data-i18n="gp5d"></span>
+          <span class="gp-ex"><em data-i18n="gpExLabel"></em> <span data-i18n="gp5x"></span></span>
+        </li>
+        <li><strong data-i18n="gp6t"></strong> <span data-i18n="gp6d"></span>
+          <span class="gp-ex"><em data-i18n="gpExLabel"></em> <span data-i18n="gp6x"></span></span>
+        </li>
+        </ol>
+      </div>
+    </details>
+    <details class="hs-acc" id="accClassroom">
+      <summary><span data-i18n="appsTitle"></span><svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="hs-acc-body">
+        <ol class="hs-apps">
+          <li data-i18n="app1"></li>
+          <li data-i18n="app2"></li>
+          <li data-i18n="app3"></li>
+          <li data-i18n="app4"></li>
+          <li data-i18n="app5"></li>
+          <li data-i18n="app6"></li>
+        </ol>
+        <p class="hs-apps-note" data-i18n="appsNote"></p>
+      </div>
+    </details>
+    <p data-i18n="methodP2"></p>
+  </div>
+
+  <div class="hs-footer-brand">
+    <a href="https://anninove.org/" target="_blank" rel="noopener noreferrer" title="Fondasyon Ann Inove">
+      <img src="https://anninove.org/img/anninove-logo-yellow-300x232.png" alt="Fondasyon Ann Inove">
+    </a>
+    <a class="txt" href="https://anninove.org/" target="_blank" rel="noopener noreferrer">Fondasyon Ann Inove</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---------------------------------------------------------------
+  // TRANSLATIONS — add a language by adding one object below.
+  // Every key must exist in each language. Add a matching
+  // <button class="lang-btn" data-lang="xx">XX</button> in the top bar (EN, FR, KR, ES today).
+  // ---------------------------------------------------------------
+  const translations = {
+    en: {
+      appTitle: "The Handshake Problem",
+      tabSolve: "Solve from a total",
+      tabBuild: "Build node by node",
+      knownLabel: "Select your known total:",
+      knownHandshakes: "Handshakes",
+      knownPeople: "People",
+      inputPlaceholder: "e.g. 45",
+      buildBtn: "Build the diagram",
+      resetBtn: "Reset",
+      addBtn: "+ Add a person",
+      showLetters: "Show letters",
+      showNumbers: "Show numbers",
+      stepThrough: "Step through",
+      nextConnection: "Next connection",
+      exportSvg: "Export as SVG",
+      nNote: "n represents the total number of people, found from the number of handshakes you entered. See the results live in the formula box above.",
+      footerNote: "Each new person joins the shorter row. Curves = handshakes within a row. Straight lines = handshakes across rows.",
+      errNoInput: "Enter a positive number.",
+      errInvalidTotal: (lo, loT, hi, hiT) => `That total isn't possible. Nearest valid totals: ${loT} (${lo} people) or ${hiT} (${hi} people).`,
+      errMinPeople: "Enter at least 2 people.",
+      methodTitle: "The Othniel Etienne Bipartite-Arc Method",
+      methodP1: "The Originality: Usually, mathematicians draw Complete Graphs (like the handshake problem) as a circle of dots connected by a web of straight lines. By combining a Bipartite layout with an Arc Diagram, I have created a unique pedagogical layout. Splitting the nodes into two distinct rows makes it much easier to visually separate the counting process (e.g., counting the straight lines first, then the top curves, then the bottom curves) rather than getting lost in a massive overlapping circular web.",
+      methodP2: "Credits & Licensing: This twin-line combinatorics visualization method and interactive application were designed and developed by Othniel Etienne as an open educational initiative for Fondasyon Ann Inove.",
+      watermark: "The Othniel Etienne Bipartite-Arc Method / Fondasyon Ann Inove",
+      tabArt: "Art mode",
+      artPeopleLabel: "People:",
+      artBuildBtn: "Create the artwork",
+      artPalette: "Palette",
+      palBrand: "Ann Inove (teal & red)",
+      palHaiti: "Haiti (blue & red)",
+      palSunset: "Sunset",
+      palOcean: "Ocean",
+      palInk: "Ink",
+      palGold: "Gold",
+      artBackground: "Background",
+      bgWhite: "White",
+      bgPaper: "Paper",
+      bgNight: "Night",
+      bgTransparent: "Transparent",
+      artWeight: "Line weight",
+      artLines: "Straight lines",
+      artArcs: "Arcs",
+      artSignature: "Include signature",
+      exportPng: "Export as PNG",
+      artHint: "Art mode hides letters and numbers and colors every line along the palette. Free for commercial use with credit (CC BY 4.0).",
+      appsTitle: "Beyond the classroom: other applications (Art mode)",
+      app1: "Graphic design and branding: posters, book and album covers, website and report backgrounds, and distinctive visual identities.",
+      app2: "Textiles and fashion: fabric, scarf and T-shirt prints, since the repeating bands suit pattern-making.",
+      app3: "Laser-cut and CNC work: wood panels, metal screens, jewelry and decorative lamps, because the lines are already vector paths.",
+      app4: "Architecture and interiors: wall murals, window film, ceiling panels and façade patterns.",
+      app5: "Math museums, exhibitions and classrooms: large prints that make visitors ask how they were made, which leads straight to the method.",
+      app6: "Generative and data art: each diagram grows from a single rule, so different numbers of people give a whole family of related artworks.",
+      appsNote: "Under CC BY 4.0, designers can use these diagrams and artworks commercially, as long as they credit the author: “The Othniel Etienne Bipartite-Arc Method, Othniel Etienne, Fondasyon Ann Inove”.",
+      tabGroups: "Two groups",
+      groupALabel: "Group A (top row):",
+      groupBLabel: "Group B (bottom row):",
+      bdTop: "Arcs inside group A",
+      bdBottom: "Arcs inside group B",
+      bdLines: "Straight lines between the groups (A × B)",
+      bdTotal: "Total pairs",
+      bdGeneric: "C(a+b, 2) = C(a, 2) + C(b, 2) + a × b",
+      groupsHint: "Counting happens in stages: first the straight lines, then the arcs of group A, then the arcs of group B.",
+      errGroups: "Enter at least 1 person in each group.",
+      gpTitle: "Beyond handshakes: problems the method can handle",
+      gpIntro: "The Bipartite-Arc method fits problems where pairs fall into two categories: pairs formed inside one group (drawn as arcs) and pairs formed between two different groups (drawn as straight lines). With the “Two groups” mode, the app draws these situations directly, with any group sizes you choose, and shows live counts of the straight lines, the top arcs and the bottom arcs.",
+      gpExLabel: "Practical example:",
+      gp1t: "The basic identity of counting by groups.",
+      gp1d: "For two groups of a and b people, the total number of pairs splits visually: C(a+b, 2) = C(a, 2) + C(b, 2) + a × b, that is “top arcs + bottom arcs + straight lines”.",
+      gp1x: "in a workshop with two groups of 5 people, there are 10 handshakes inside the first group, 10 inside the second and 25 between the two groups, 45 in total. Students see why 45 = 10 + 10 + 25 instead of memorizing a formula.",
+      gp2t: "Tournaments with pools or conferences.",
+      gp2d: "Each row is a pool: arcs are games inside a pool, straight lines are games between pools, which matches how many real leagues are organized.",
+      gp2x: "12 teams in a school championship split into two pools of 6 play 15 + 15 = 30 games inside the pools and 6 × 6 = 36 games between pools, 66 games in total. Organizers can plan the calendar, the number of fields and the referees' budget.",
+      gp3t: "Networks on two sites.",
+      gp3d: "Arcs are links inside one site, straight lines are links between the two sites, which are often more expensive.",
+      gp3x: "6 computers in one school building and 4 in another need 15 + 6 = 21 internal links and 6 × 4 = 24 links between buildings, 45 links if everything is connected. It is immediately clear that the links between buildings (long cables or wireless links) weigh most on the cost.",
+      gp4t: "Meetings between two delegations or two groups.",
+      gp4d: "We separate what happens inside each group from what happens between the groups (handshakes, exchanges, work pairs).",
+      gp4x: "a training workshop brings together 9 teachers and 6 inspectors. There are 36 + 15 = 51 meetings inside the groups and 9 × 6 = 54 cross meetings, 105 meetings in total. Organizers know how much time to plan so that everyone meets everyone else.",
+      gp4y: "two classes of 25 and 20 students organize an exchange of presentations. There are 300 + 190 = 490 pairs inside the classes and 25 × 20 = 500 pairs between the classes, 990 pairs in total.",
+      gp5t: "Simple probabilities.",
+      gp5d: "The share of straight lines in the total gives the probability that a randomly chosen pair is made of people from different groups.",
+      gp5x: "in a group of 12 girls and 8 boys, there are 96 mixed pairs (straight lines) out of 190 pairs in total, a probability of about 50.5% that a randomly drawn pair is mixed. The teacher can then compare with a real draw in class.",
+      gp6t: "The number of links of a point (handshake lemma).",
+      gp6d: "By reading on the diagram the arcs and lines leaving a point, you find its number of links: everyone has n − 1, whichever row they are in. The sum of all these numbers is twice the total number of links.",
+      gp6x: "with 5 + 5 people, each point has 4 arcs and 5 lines, so 9 links. The sum is 10 × 9 = 90, exactly twice the 45 handshakes. Students check that “everyone shakes n − 1 hands” and understand why the formula n(n−1)/2 divides by 2."
+    },
+    fr: {
+      appTitle: "Le problème des poignées de main",
+      tabSolve: "Résoudre à partir d'un total",
+      tabBuild: "Construire nœud par nœud",
+      knownLabel: "Sélectionnez votre total connu :",
+      knownHandshakes: "Poignées de main",
+      knownPeople: "Personnes",
+      inputPlaceholder: "ex. 45",
+      buildBtn: "Construire le diagramme",
+      resetBtn: "Réinitialiser",
+      addBtn: "+ Ajouter une personne",
+      showLetters: "Afficher les lettres",
+      showNumbers: "Afficher les numéros",
+      stepThrough: "Pas à pas",
+      nextConnection: "Connexion suivante",
+      exportSvg: "Exporter en SVG",
+      nNote: "n représente le nombre total de personnes, déterminé à partir du nombre de poignées de main saisi. Voyez les résultats en direct dans la zone de formule ci-dessus.",
+      footerNote: "Chaque nouvelle personne rejoint la rangée la plus courte. Courbes = poignées de main au sein d'une même rangée. Lignes droites = poignées de main entre les deux rangées.",
+      errNoInput: "Entrez un nombre positif.",
+      errInvalidTotal: (lo, loT, hi, hiT) => `Ce total n'est pas possible. Totaux valides les plus proches : ${loT} (${lo} personnes) ou ${hiT} (${hi} personnes).`,
+      errMinPeople: "Entrez au moins 2 personnes.",
+      methodTitle: "La méthode Bipartite-Arc d'Othniel Etienne",
+      methodP1: "L'originalité : Habituellement, les mathématiciens dessinent les graphes complets (comme le problème des poignées de main) sous la forme d'un cercle de points reliés par un réseau de lignes droites. En combinant une disposition bipartite avec un diagramme en arcs, j'ai créé une présentation pédagogique unique. Répartir les nœuds en deux rangées distinctes permet de séparer visuellement le processus de comptage (par exemple, compter d'abord les lignes droites, puis les courbes du haut, puis les courbes du bas) plutôt que de se perdre dans un immense réseau circulaire superposé.",
+      methodP2: "Crédits et licence : Cette méthode de visualisation combinatoire à deux rangées, ainsi que l'application interactive, ont été conçues et développées par Othniel Etienne dans le cadre d'une initiative éducative ouverte pour la Fondasyon Ann Inove.",
+      watermark: "La méthode Bipartite-Arc d'Othniel Etienne / Fondasyon Ann Inove",
+      tabArt: "Mode art",
+      artPeopleLabel: "Personnes :",
+      artBuildBtn: "Créer l'œuvre",
+      artPalette: "Palette",
+      palBrand: "Ann Inove (turquoise et rouge)",
+      palHaiti: "Haïti (bleu et rouge)",
+      palSunset: "Coucher de soleil",
+      palOcean: "Océan",
+      palInk: "Encre",
+      palGold: "Or",
+      artBackground: "Arrière-plan",
+      bgWhite: "Blanc",
+      bgPaper: "Papier",
+      bgNight: "Nuit",
+      bgTransparent: "Transparent",
+      artWeight: "Épaisseur des lignes",
+      artLines: "Lignes droites",
+      artArcs: "Arcs",
+      artSignature: "Inclure la signature",
+      exportPng: "Exporter en PNG",
+      artHint: "Le mode art masque les lettres et les numéros et colore chaque ligne selon la palette. Utilisation commerciale libre avec mention de l'auteur (CC BY 4.0).",
+      appsTitle: "Au-delà de la salle de classe : autres applications (Mode art)",
+      app1: "Design graphique et identité visuelle : affiches, couvertures de livres et d'albums, arrière-plans de sites web et de rapports, identités visuelles distinctives.",
+      app2: "Textile et mode : impressions sur tissus, foulards et T-shirts, car les bandes répétitives se prêtent à la création de motifs.",
+      app3: "Découpe laser et CNC : panneaux de bois, écrans métalliques, bijoux et luminaires décoratifs, car les lignes sont déjà des tracés vectoriels.",
+      app4: "Architecture et décoration intérieure : fresques murales, films pour vitres, panneaux de plafond et motifs de façade.",
+      app5: "Musées de mathématiques, expositions et salles de classe : de grands tirages qui donnent envie de savoir comment ils ont été réalisés, ce qui mène directement à la méthode.",
+      app6: "Art génératif et art des données : chaque diagramme naît d'une seule règle, de sorte que différents nombres de personnes donnent toute une famille d'œuvres apparentées.",
+      appsNote: "Sous licence CC BY 4.0, les designers peuvent utiliser ces diagrammes et œuvres à des fins commerciales, à condition de citer l'auteur : « La méthode Bipartite-Arc d'Othniel Etienne, Othniel Etienne, Fondasyon Ann Inove ».",
+      tabGroups: "Deux groupes",
+      groupALabel: "Groupe A (rangée du haut) :",
+      groupBLabel: "Groupe B (rangée du bas) :",
+      bdTop: "Arcs au sein du groupe A",
+      bdBottom: "Arcs au sein du groupe B",
+      bdLines: "Lignes droites entre les groupes (A × B)",
+      bdTotal: "Total des paires",
+      bdGeneric: "C(a+b, 2) = C(a, 2) + C(b, 2) + a × b",
+      groupsHint: "Le comptage se fait par étapes : d'abord les lignes droites, puis les arcs du groupe A, puis les arcs du groupe B.",
+      errGroups: "Entrez au moins 1 personne dans chaque groupe.",
+      gpTitle: "Au-delà des poignées de main : problèmes que la méthode permet de traiter",
+      gpIntro: "La méthode Bipartite-Arc convient aux problèmes où l'on compte des paires qui se répartissent en deux catégories : les paires formées au sein d'un même groupe (représentées par des arcs) et celles formées entre deux groupes différents (représentées par des lignes droites). Avec le mode « Deux groupes », l'application dessine directement ces situations, avec la taille de chaque groupe au choix, et affiche en direct le décompte des lignes droites, des arcs du haut et des arcs du bas.",
+      gpExLabel: "Exemple pratique :",
+      gp1t: "L'identité fondamentale du dénombrement par groupes.",
+      gp1d: "Pour deux groupes de a et b personnes, le total des paires se décompose visuellement : C(a+b, 2) = C(a, 2) + C(b, 2) + a × b, soit « arcs du haut + arcs du bas + lignes droites ».",
+      gp1x: "dans un atelier réunissant deux groupes de 5 personnes, on compte 10 poignées de main au sein du premier groupe, 10 au sein du second et 25 entre les deux groupes, soit 45 au total. L'élève voit pourquoi 45 = 10 + 10 + 25, au lieu de mémoriser une formule.",
+      gp2t: "Tournois par poules ou par conférences.",
+      gp2d: "Chaque rangée est une poule : les arcs sont les matchs internes à la poule, les lignes droites sont les matchs entre poules, ce qui correspond à l'organisation réelle de nombreux championnats.",
+      gp2x: "12 équipes d'un championnat scolaire réparties en deux poules de 6 jouent 15 + 15 = 30 matchs internes et 6 × 6 = 36 matchs entre poules, soit 66 matchs. Les organisateurs peuvent ainsi prévoir le calendrier, le nombre de terrains et le budget des arbitres.",
+      gp3t: "Réseaux à deux sites.",
+      gp3d: "Les arcs sont les liaisons à l'intérieur d'un site, les lignes droites sont les liaisons entre les deux sites, souvent plus coûteuses.",
+      gp3x: "6 ordinateurs dans un bâtiment d'école et 4 dans un autre demandent 15 + 6 = 21 liaisons internes et 6 × 4 = 24 liaisons entre bâtiments, soit 45 liaisons si tout est relié. On voit tout de suite que ce sont les liaisons entre bâtiments (câbles longs ou liaison sans fil) qui pèsent le plus sur le coût.",
+      gp4t: "Rencontres entre deux délégations ou deux groupes.",
+      gp4d: "On distingue ce qui se passe au sein de chaque groupe de ce qui se passe entre les groupes (poignées de main, échanges, binômes de travail).",
+      gp4x: "un atelier de formation réunit 9 enseignants et 6 inspecteurs. Il y a 36 + 15 = 51 rencontres au sein des groupes et 9 × 6 = 54 rencontres croisées, soit 105 rencontres au total. Les organisateurs savent ainsi combien de temps prévoir pour que chaque participant rencontre chacun des autres.",
+      gp4y: "deux classes de 25 et de 20 élèves organisent un échange de présentations. Il y a 300 + 190 = 490 paires au sein des classes et 25 × 20 = 500 paires entre les classes, soit 990 paires.",
+      gp5t: "Probabilités simples.",
+      gp5d: "La part des lignes droites dans le total donne la probabilité qu'une paire choisie au hasard soit formée de personnes de groupes différents.",
+      gp5x: "dans un groupe de 12 filles et 8 garçons, on compte 96 paires mixtes (lignes droites) sur 190 paires au total, soit une probabilité d'environ 50,5 % qu'un binôme tiré au sort soit mixte. L'enseignant peut ensuite comparer avec un tirage réel en classe.",
+      gp6t: "Le nombre de liens d'un point (lemme des poignées de main).",
+      gp6d: "En lisant sur le schéma les arcs et les lignes qui partent d'un point, on retrouve son nombre de liens : chaque personne en a n − 1, quelle que soit sa rangée. La somme de tous ces nombres vaut le double du nombre total de liens.",
+      gp6x: "avec 5 + 5 personnes, chaque point a 4 arcs et 5 lignes, soit 9 liens. La somme est 10 × 9 = 90, soit bien le double de 45 poignées de main. Les élèves vérifient ainsi que « chacun serre n − 1 mains » et comprennent pourquoi on divise par 2 dans la formule n(n−1)/2."
+    },
+    kr: {
+      appTitle: "Pwoblèm bay lamen an",
+      tabSolve: "Rezoud apati yon total",
+      tabBuild: "Konstwi pwen pa pwen",
+      knownLabel: "Chwazi total ou konnen an :",
+      knownHandshakes: "Bay lamen",
+      knownPeople: "Moun",
+      inputPlaceholder: "egz. 45",
+      buildBtn: "Konstwi dyagram nan",
+      resetBtn: "Rekòmanse",
+      addBtn: "+ Ajoute yon moun",
+      showLetters: "Montre lèt yo",
+      showNumbers: "Montre nimewo yo",
+      stepThrough: "Pa etap",
+      nextConnection: "Pwochen koneksyon",
+      exportSvg: "Ekspòte an SVG",
+      nNote: "n reprezante kantite total moun yo, ki jwenn apati kantite bay lamen ou antre a. Gade rezilta yo an dirèk nan bwat fòmil la ki anwo a.",
+      footerNote: "Chak nouvo moun antre nan ranje ki pi kout la. Koub = bay lamen nan menm ranje a. Liy dwat = bay lamen ant de ranje yo.",
+      errNoInput: "Antre yon nimewo pozitif.",
+      errInvalidTotal: (lo, loT, hi, hiT) => `Total sa a pa posib. Total ki pi pre ki valab yo: ${loT} (${lo} moun) oswa ${hiT} (${hi} moun).`,
+      errMinPeople: "Antre omwen 2 moun.",
+      methodTitle: "Metòd Bipatit-Ark Othniel Etienne",
+      methodP1: "Orijinalite a: Anjeneral, matematisyen yo trase graf konplè yo (tankou pwoblèm bay lamen an) kòm yon sèk pwen ki konekte ak yon rezo liy dwat. Lè m konbine yon òganizasyon bipatit ak yon dyagram an ark, mwen kreye yon fòm pedagojik inik. Lè nou separe pwen yo an de ranje distenk, li pi fasil pou nou separe pwosesis kontaj la vizyèlman (pa egzanp, konte liy dwat yo anvan, answit koub anwo yo, epi koub anba yo) olye nou pèdi nan yon gwo rezo won ki sipèpoze.",
+      methodP2: "Kredi ak lisans: Metòd vizyalizasyon konbinatwa de ranje sa a ak aplikasyon entèaktif la te konsevwa epi devlope pa Othniel Etienne kòm yon inisyativ edikatif ouvè pou Fondasyon Ann Inove.",
+      watermark: "Metòd Bipatit-Ark Othniel Etienne / Fondasyon Ann Inove",
+      tabArt: "Mòd atizay",
+      artPeopleLabel: "Moun:",
+      artBuildBtn: "Kreye travay la",
+      artPalette: "Palèt",
+      palBrand: "Ann Inove (tikwaz ak wouj)",
+      palHaiti: "Ayiti (ble ak wouj)",
+      palSunset: "Solèy kouche",
+      palOcean: "Oseyan",
+      palInk: "Lank",
+      palGold: "Lò",
+      artBackground: "Fon",
+      bgWhite: "Blan",
+      bgPaper: "Papye",
+      bgNight: "Nwit",
+      bgTransparent: "Transparan",
+      artWeight: "Epesè liy yo",
+      artLines: "Liy dwat",
+      artArcs: "Ark",
+      artSignature: "Mete siyati a",
+      exportPng: "Ekspòte an PNG",
+      artHint: "Mòd atizay la kache lèt ak nimewo yo epi li kolore chak liy dapre palèt la. Gratis pou itilizasyon komèsyal si ou site otè a (CC BY 4.0).",
+      appsTitle: "Pi lwen pase salklas la: lòt itilizasyon (Mòd atizay)",
+      app1: "Konsepsyon grafik ak idantite vizyèl: afich, kouvèti liv ak albòm, fon sit wèb ak rapò, ak idantite vizyèl ki diferan.",
+      app2: "Twal ak mòd: motif sou twal, fula ak T-shirt, paske bann ki repete yo bon pou fè motif.",
+      app3: "Koupe lazè ak CNC: panno an bwa, ekran an metal, bijou ak lanp dekoratif, paske liy yo deja se tras vektè.",
+      app4: "Achitekti ak dekorasyon enteryè: penti miral, fim pou fenèt, panno plafon ak motif pou fasad.",
+      app5: "Mize matematik, ekspozisyon ak salklas: gwo enpresyon ki fè moun vle konnen ki jan yo fè yo, sa ki mennen dirèkteman nan metòd la.",
+      app6: "Atizay jeneratif ak atizay done: chak dyagram soti nan yon sèl règ, kidonk diferan kantite moun bay yon fanmi tout travay ki gen rapò.",
+      appsNote: "Anba lisans CC BY 4.0, designer yo ka itilize dyagram ak travay sa yo pou fè lajan, depi yo site otè a: “Metòd Bipatit-Ark Othniel Etienne, Othniel Etienne, Fondasyon Ann Inove”.",
+      tabGroups: "De gwoup",
+      groupALabel: "Gwoup A (ranje anwo):",
+      groupBLabel: "Gwoup B (ranje anba):",
+      bdTop: "Ark andedan gwoup A",
+      bdBottom: "Ark andedan gwoup B",
+      bdLines: "Liy dwat ant gwoup yo (A × B)",
+      bdTotal: "Total pè",
+      bdGeneric: "C(a+b, 2) = C(a, 2) + C(b, 2) + a × b",
+      groupsHint: "Kontaj la fèt pa etap: dabò liy dwat yo, answit ark gwoup A, epi ark gwoup B.",
+      errGroups: "Antre omwen 1 moun nan chak gwoup.",
+      gpTitle: "Pi lwen pase bay lamen: pwoblèm metòd la ka rezoud",
+      gpIntro: "Metòd Bipatit-Ark la bon pou pwoblèm kote nou konte pè ki separe an de kategori: pè ki fòme andedan yon menm gwoup (reprezante ak ark) ak pè ki fòme ant de gwoup diferan (reprezante ak liy dwat). Avèk mòd « De gwoup » la, aplikasyon an trase sitiyasyon sa yo dirèkteman, ak gwosè chak gwoup ou chwazi, epi li montre an dirèk konte liy dwat yo, ark anwo yo ak ark anba yo.",
+      gpExLabel: "Egzanp pratik:",
+      gp1t: "Idantite fondamantal pou konte pa gwoup.",
+      gp1d: "Pou de gwoup ki gen a ak b moun, total pè yo dekonpoze vizyèlman: C(a+b, 2) = C(a, 2) + C(b, 2) + a × b, sa vle di « ark anwo + ark anba + liy dwat ».",
+      gp1x: "nan yon atelye ki rasanble de gwoup 5 moun, gen 10 bay lamen andedan premye gwoup la, 10 andedan dezyèm nan ak 25 ant de gwoup yo, sa fè 45 an total. Elèv la wè poukisa 45 = 10 + 10 + 25, olye li aprann yon fòmil pa kè.",
+      gp2t: "Tounwa pa poul oswa pa konferans.",
+      gp2d: "Chak ranje se yon poul: ark yo se match andedan poul la, liy dwat yo se match ant poul yo, sa ki koresponn ak jan anpil chanpyona òganize reyèlman.",
+      gp2x: "12 ekip nan yon chanpyona lekòl ki separe an de poul 6 jwe 15 + 15 = 30 match andedan poul yo ak 6 × 6 = 36 match ant poul yo, sa fè 66 match. Òganizatè yo ka konsa prevwa kalandriye a, kantite teren ak bidjè pou abit yo.",
+      gp3t: "Rezo sou de sit.",
+      gp3d: "Ark yo se koneksyon andedan yon sit, liy dwat yo se koneksyon ant de sit yo, ki souvan pi chè.",
+      gp3x: "6 òdinatè nan yon bilding lekòl ak 4 nan yon lòt mande 15 + 6 = 21 koneksyon andedan ak 6 × 4 = 24 koneksyon ant bilding yo, sa fè 45 koneksyon si tout bagay konekte. Nou wè tousuit se koneksyon ant bilding yo (kab long oswa koneksyon san fil) ki pi lou nan koute a.",
+      gp4t: "Rankont ant de delegasyon oswa de gwoup.",
+      gp4d: "Nou distenge sa k ap pase andedan chak gwoup ak sa k ap pase ant gwoup yo (bay lamen, echanj, binòm travay).",
+      gp4x: "yon atelye fòmasyon rasanble 9 pwofesè ak 6 enspektè. Gen 36 + 15 = 51 rankont andedan gwoup yo ak 9 × 6 = 54 rankont kwaze, sa fè 105 rankont an total. Òganizatè yo konnen konsa konbyen tan pou yo prevwa pou chak patisipan rankontre tout lòt yo.",
+      gp4y: "de klas 25 ak 20 elèv òganize yon echanj prezantasyon. Gen 300 + 190 = 490 pè andedan klas yo ak 25 × 20 = 500 pè ant klas yo, sa fè 990 pè.",
+      gp5t: "Pwobabilite senp.",
+      gp5d: "Pati liy dwat yo nan total la bay pwobabilite pou yon pè ki chwazi o aza fèt ak moun ki sòti nan gwoup diferan.",
+      gp5x: "nan yon gwoup 12 fi ak 8 gason, gen 96 pè melanje (liy dwat) sou 190 pè an total, sa vle di apeprè 50,5 % chans pou yon binòm ki tire o aza melanje. Pwofesè a ka konpare apre sa ak yon tiraj reyèl nan klas la.",
+      gp6t: "Kantite lyen yon pwen (lèm bay lamen).",
+      gp6d: "Lè nou li sou dyagram nan ark ak liy ki soti nan yon pwen, nou jwenn kantite lyen li genyen: chak moun gen n − 1, kèlkeswa ranje li ye a. Sòm tout nimewo sa yo se doub kantite total lyen yo.",
+      gp6x: "avèk 5 + 5 moun, chak pwen gen 4 ark ak 5 liy, sa fè 9 lyen. Sòm nan se 10 × 9 = 90, ki se egzakteman doub 45 bay lamen yo. Konsa elèv yo verifye ke « chak moun sere n − 1 men » epi yo konprann poukisa nou divize pa 2 nan fòmil n(n−1)/2 la."
+    },
+    es: {
+      appTitle: "El problema de los apretones de manos",
+      tabSolve: "Resolver a partir de un total",
+      tabBuild: "Construir nodo por nodo",
+      knownLabel: "Seleccione su total conocido:",
+      knownHandshakes: "Apretones de manos",
+      knownPeople: "Personas",
+      inputPlaceholder: "ej. 45",
+      buildBtn: "Construir el diagrama",
+      resetBtn: "Reiniciar",
+      addBtn: "+ Añadir una persona",
+      showLetters: "Mostrar letras",
+      showNumbers: "Mostrar números",
+      stepThrough: "Paso a paso",
+      nextConnection: "Siguiente conexión",
+      exportSvg: "Exportar como SVG",
+      nNote: "n representa el número total de personas, calculado a partir del número de apretones de manos ingresado. Vea los resultados en vivo en el cuadro de la fórmula de arriba.",
+      footerNote: "Cada nueva persona se une a la fila más corta. Curvas = apretones de manos dentro de una misma fila. Líneas rectas = apretones de manos entre las dos filas.",
+      errNoInput: "Ingrese un número positivo.",
+      errInvalidTotal: (lo, loT, hi, hiT) => `Ese total no es posible. Totales válidos más cercanos: ${loT} (${lo} personas) o ${hiT} (${hi} personas).`,
+      errMinPeople: "Ingrese al menos 2 personas.",
+      methodTitle: "El método Bipartito-Arco de Othniel Etienne",
+      methodP1: "La originalidad: Habitualmente, los matemáticos dibujan los grafos completos (como el problema de los apretones de manos) como un círculo de puntos conectados por una red de líneas rectas. Al combinar una disposición bipartita con un diagrama de arcos, he creado un formato pedagógico único. Dividir los nodos en dos filas distintas facilita separar visualmente el proceso de conteo (por ejemplo, contar primero las líneas rectas, luego las curvas superiores y después las curvas inferiores) en lugar de perderse en una enorme red circular superpuesta.",
+      methodP2: "Créditos y licencia: Este método de visualización combinatoria de doble fila, así como la aplicación interactiva, fueron diseñados y desarrollados por Othniel Etienne como una iniciativa educativa abierta para la Fondasyon Ann Inove.",
+      watermark: "El método Bipartito-Arco de Othniel Etienne / Fondasyon Ann Inove",
+      tabArt: "Modo arte",
+      artPeopleLabel: "Personas:",
+      artBuildBtn: "Crear la obra",
+      artPalette: "Paleta",
+      palBrand: "Ann Inove (turquesa y rojo)",
+      palHaiti: "Haití (azul y rojo)",
+      palSunset: "Atardecer",
+      palOcean: "Océano",
+      palInk: "Tinta",
+      palGold: "Oro",
+      artBackground: "Fondo",
+      bgWhite: "Blanco",
+      bgPaper: "Papel",
+      bgNight: "Noche",
+      bgTransparent: "Transparente",
+      artWeight: "Grosor de línea",
+      artLines: "Líneas rectas",
+      artArcs: "Arcos",
+      artSignature: "Incluir la firma",
+      exportPng: "Exportar como PNG",
+      artHint: "El modo arte oculta las letras y los números y colorea cada línea según la paleta. Uso comercial libre con atribución (CC BY 4.0).",
+      appsTitle: "Más allá del aula: otras aplicaciones (Modo arte)",
+      app1: "Diseño gráfico e identidad visual: carteles, portadas de libros y álbumes, fondos de sitios web e informes, e identidades visuales distintivas.",
+      app2: "Textiles y moda: estampados en telas, pañuelos y camisetas, ya que las bandas repetitivas se prestan a la creación de patrones.",
+      app3: "Corte láser y CNC: paneles de madera, pantallas metálicas, joyería y lámparas decorativas, porque las líneas ya son trazados vectoriales.",
+      app4: "Arquitectura e interiorismo: murales, láminas para ventanas, paneles de techo y patrones de fachada.",
+      app5: "Museos de matemáticas, exposiciones y aulas: grandes impresiones que despiertan la curiosidad por saber cómo se hicieron, lo que lleva directamente al método.",
+      app6: "Arte generativo y arte de datos: cada diagrama nace de una sola regla, de modo que distintos números de personas dan lugar a toda una familia de obras relacionadas.",
+      appsNote: "Bajo la licencia CC BY 4.0, los diseñadores pueden usar estos diagramas y obras con fines comerciales, siempre que citen al autor: «El método Bipartito-Arco de Othniel Etienne, Othniel Etienne, Fondasyon Ann Inove».",
+      tabGroups: "Dos grupos",
+      groupALabel: "Grupo A (fila superior):",
+      groupBLabel: "Grupo B (fila inferior):",
+      bdTop: "Arcos dentro del grupo A",
+      bdBottom: "Arcos dentro del grupo B",
+      bdLines: "Líneas rectas entre los grupos (A × B)",
+      bdTotal: "Total de pares",
+      bdGeneric: "C(a+b, 2) = C(a, 2) + C(b, 2) + a × b",
+      groupsHint: "El conteo se hace por etapas: primero las líneas rectas, luego los arcos del grupo A y después los arcos del grupo B.",
+      errGroups: "Ingrese al menos 1 persona en cada grupo.",
+      gpTitle: "Más allá de los apretones de manos: problemas que el método permite tratar",
+      gpIntro: "El método Bipartito-Arco es adecuado para problemas en los que se cuentan pares que se reparten en dos categorías: los pares formados dentro de un mismo grupo (representados con arcos) y los formados entre dos grupos distintos (representados con líneas rectas). Con el modo «Dos grupos», la aplicación dibuja directamente estas situaciones, con el tamaño de cada grupo a elección, y muestra en directo el recuento de las líneas rectas, de los arcos superiores y de los arcos inferiores.",
+      gpExLabel: "Ejemplo práctico:",
+      gp1t: "La identidad fundamental del conteo por grupos.",
+      gp1d: "Para dos grupos de a y b personas, el total de pares se descompone visualmente: C(a+b, 2) = C(a, 2) + C(b, 2) + a × b, es decir, «arcos superiores + arcos inferiores + líneas rectas».",
+      gp1x: "en un taller con dos grupos de 5 personas, hay 10 apretones de manos dentro del primer grupo, 10 dentro del segundo y 25 entre los dos grupos, 45 en total. El estudiante ve por qué 45 = 10 + 10 + 25 en lugar de memorizar una fórmula.",
+      gp2t: "Torneos por grupos o por conferencias.",
+      gp2d: "Cada fila es un grupo: los arcos son los partidos dentro del grupo y las líneas rectas son los partidos entre grupos, lo que corresponde a la organización real de muchos campeonatos.",
+      gp2x: "12 equipos de un campeonato escolar repartidos en dos grupos de 6 juegan 15 + 15 = 30 partidos internos y 6 × 6 = 36 partidos entre grupos, es decir, 66 partidos. Los organizadores pueden así prever el calendario, el número de campos y el presupuesto de los árbitros.",
+      gp3t: "Redes en dos sedes.",
+      gp3d: "Los arcos son las conexiones dentro de una sede y las líneas rectas son las conexiones entre las dos sedes, a menudo más costosas.",
+      gp3x: "6 computadoras en un edificio escolar y 4 en otro requieren 15 + 6 = 21 conexiones internas y 6 × 4 = 24 conexiones entre edificios, es decir, 45 conexiones si todo está conectado. Se ve enseguida que las conexiones entre edificios (cables largos o enlace inalámbrico) son las que más pesan en el costo.",
+      gp4t: "Encuentros entre dos delegaciones o dos grupos.",
+      gp4d: "Se distingue lo que ocurre dentro de cada grupo de lo que ocurre entre los grupos (apretones de manos, intercambios, parejas de trabajo).",
+      gp4x: "un taller de formación reúne a 9 docentes y 6 inspectores. Hay 36 + 15 = 51 encuentros dentro de los grupos y 9 × 6 = 54 encuentros cruzados, es decir, 105 encuentros en total. Los organizadores saben así cuánto tiempo prever para que cada participante conozca a todos los demás.",
+      gp4y: "dos clases de 25 y de 20 estudiantes organizan un intercambio de presentaciones. Hay 300 + 190 = 490 pares dentro de las clases y 25 × 20 = 500 pares entre las clases, es decir, 990 pares.",
+      gp5t: "Probabilidades simples.",
+      gp5d: "La proporción de líneas rectas en el total da la probabilidad de que un par elegido al azar esté formado por personas de grupos distintos.",
+      gp5x: "en un grupo de 12 chicas y 8 chicos hay 96 pares mixtos (líneas rectas) de un total de 190 pares, es decir, una probabilidad de aproximadamente 50,5 % de que una pareja sacada al azar sea mixta. El docente puede luego comparar con un sorteo real en clase.",
+      gp6t: "El número de conexiones de un punto (lema del apretón de manos).",
+      gp6d: "Al leer en el esquema los arcos y las líneas que salen de un punto, se obtiene su número de conexiones: cada persona tiene n − 1, sea cual sea su fila. La suma de todos estos números es el doble del número total de conexiones.",
+      gp6x: "con 5 + 5 personas, cada punto tiene 4 arcos y 5 líneas, es decir, 9 conexiones. La suma es 10 × 9 = 90, exactamente el doble de los 45 apretones de manos. Los estudiantes comprueban que «cada uno da n − 1 apretones» y entienden por qué en la fórmula n(n−1)/2 se divide entre 2."
+    }
+  };
+
+  let currentLang = 'en';
+  function t(key){ return translations[currentLang][key]; }
+
+  function applyLanguage(lang){
+    currentLang = lang;
+    document.documentElement.lang = (lang === 'kr') ? 'ht' : lang;
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const v = translations[lang][el.getAttribute('data-i18n')];
+      if (typeof v === 'string') el.textContent = v;
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+      el.setAttribute('placeholder', translations[lang][el.getAttribute('data-i18n-ph')]);
+    });
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===lang));
+    updateStepButton();
+  }
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.addEventListener('click', ()=>applyLanguage(b.dataset.lang));
+  });
+
+  // ---------------------------------------------------------------
+  // GRAPH ENGINE
+  // ---------------------------------------------------------------
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById('graph');
+  const RED = '#b3392c', TEAL = '#146b79', GRAY = '#8a8f8a';
+  const SPACING = 80, X0 = 80, TOP_Y = 260, BOT_Y = 440;
+  const MIN_DIST = 26, L_START = 46, L_STEP = 16, L_MAX = 220;
+
+  let topNodes = [], botNodes = [];
+  let edgeCount = 0, letterCounter = 0;
+  let placedExt = [], animQueue = [], animating = false;
+  let counts = {cross:0, top:0, bottom:0};
+  let groupsExpected = null;   // {a, b} when a two-group diagram is built
+
+  // ---- ART MODE ----
+  let artMode = false, artTotal = 0;
+  const ART_PALETTES = {
+    brand:  ['#146b79', '#c98a2c', '#b3392c'],
+    haiti:  ['#1f4fd8', '#6a2a7a', '#d21034'],
+    sunset: ['#ffd166', '#ef476f', '#5b2a86'],
+    ocean:  ['#9be7ff', '#1e88e5', '#0b2a5b'],
+    ink:    ['#111111', '#555555', '#9a9a9a'],
+    gold:   ['#f6e27a', '#c98a2c', '#8a5a14']
+  };
+  const ART_BGS = { white:'#ffffff', paper:'#faf6ec', night:'#0f1420', transparent:null };
+  function hexToRgb(h){ return [1,3,5].map(i=>parseInt(h.slice(i,i+2),16)); }
+  function colorAt(t, stops){
+    t = Math.min(1, Math.max(0, t));
+    const seg = t * (stops.length - 1), i = Math.min(stops.length - 2, Math.floor(seg)), f = seg - i;
+    const a = hexToRgb(stops[i]), b = hexToRgb(stops[i+1]);
+    return 'rgb(' + a.map((v,k)=>Math.round(v + (b[k]-v)*f)).join(',') + ')';
+  }
+  function styleArt(el){
+    const stops = ART_PALETTES[document.getElementById('artPalette').value];
+    const col = colorAt(parseFloat(el.dataset.t), stops);
+    const w = parseFloat(document.getElementById('artWeight').value);
+    const op = artTotal <= 30 ? 0.85 : (artTotal <= 100 ? 0.6 : 0.45);
+    if (el.classList.contains('art-dot')) { el.setAttribute('fill', col); return; }
+    el.setAttribute('stroke', col);
+    el.setAttribute('stroke-width', (el.classList.contains('art-arc') ? 1.1 : 1.0) * w);
+    el.setAttribute('opacity', op);
+  }
+  function restyleAll(){ svg.querySelectorAll('.art-cross,.art-arc,.art-dot').forEach(styleArt); }
+  function artT(order){ return artTotal > 1 ? order / (artTotal - 1) : 0; }
+  function applyArtBg(){
+    const wrap = svg.parentElement;
+    wrap.classList.remove('bg-transparent');
+    wrap.style.background = '';
+    if (!artMode) return;
+    const v = document.getElementById('artBg').value;
+    if (v === 'transparent') wrap.classList.add('bg-transparent'); else wrap.style.background = ART_BGS[v];
+  }
+
+  // Bounding box of everything drawn so far -> drives the auto-fit viewBox
+  const DEFAULT_VB = [0, 0, 900, 700];
+  const VB_PAD = 40;
+  let bounds = null;
+  function resetBounds(){ bounds = {minX:Infinity, minY:Infinity, maxX:-Infinity, maxY:-Infinity}; }
+  function expand(x, y){
+    if (x < bounds.minX) bounds.minX = x;
+    if (x > bounds.maxX) bounds.maxX = x;
+    if (y < bounds.minY) bounds.minY = y;
+    if (y > bounds.maxY) bounds.maxY = y;
+  }
+  function fitViewBox(){
+    if (!isFinite(bounds.minX)) { svg.setAttribute('viewBox', DEFAULT_VB.join(' ')); return; }
+    // never smaller than the default frame, always enough room around the drawing
+    const minX = Math.min(bounds.minX - VB_PAD, DEFAULT_VB[0]);
+    const minY = Math.min(bounds.minY - VB_PAD, DEFAULT_VB[1]);
+    const maxX = Math.max(bounds.maxX + VB_PAD, DEFAULT_VB[2]);
+    const maxY = Math.max(bounds.maxY + VB_PAD, DEFAULT_VB[3]);
+    svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`);
+  }
+
+  function stepMode(){ return document.getElementById('toggleStep').checked; }
+
+  function nextLabel(){
+    let n = letterCounter++, s = '';
+    do { s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n/26) - 1; } while (n >= 0);
+    return s;
+  }
+
+  function resetAll(){
+    topNodes = []; botNodes = [];
+    edgeCount = 0; letterCounter = 0;
+    placedExt = []; animQueue = []; animating = false;
+    counts = {cross:0, top:0, bottom:0}; groupsExpected = null;
+    svg.innerHTML = '';
+    resetBounds();
+    fitViewBox();
+    updateFormula();
+    updateStepButton();
+  }
+
+  function updateFormula(){
+    const n = topNodes.length + botNodes.length;
+    document.getElementById('formulaVal').textContent = edgeCount + `  (n = ${n})`;
+    updateBreakdown();
+  }
+  function updateBreakdown(){
+    const g = groupsExpected, set = (id, v) => { document.getElementById(id).textContent = v; };
+    const c2 = k => k*(k-1)/2;
+    if (!g) {
+      ['bdTopVal','bdBottomVal','bdLinesVal','bdTotalVal'].forEach(id => set(id, '0 / 0'));
+      set('bdIdentity', t('bdGeneric'));
+      return;
+    }
+    const eTop = c2(g.a), eBot = c2(g.b), eLines = g.a*g.b, eTotal = eTop + eBot + eLines;
+    set('bdTopVal', `${counts.top} / ${eTop}`);
+    set('bdBottomVal', `${counts.bottom} / ${eBot}`);
+    set('bdLinesVal', `${counts.cross} / ${eLines}`);
+    set('bdTotalVal', `${edgeCount} / ${eTotal}`);
+    set('bdIdentity', `C(${g.a+g.b}, 2) = C(${g.a}, 2) + C(${g.b}, 2) + ${g.a} × ${g.b}  →  ${eTotal} = ${eTop} + ${eBot} + ${eLines}`);
+  }
+
+  function svgEl(tag, attrs){
+    const el = document.createElementNS(svgNS, tag);
+    for (const k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+
+  function drawPoint(node){
+    if (artMode) {
+      const dot = svgEl('circle', {cx:node.x+X0, cy:node.y, r:3, class:'art-dot', 'data-t':artT(node.order)});
+      svg.appendChild(dot); styleArt(dot);
+      expand(node.x+X0-14, node.y-14); expand(node.x+X0+14, node.y+14);
+      return;
+    }
+    svg.appendChild(svgEl('circle', {cx:node.x+X0, cy:node.y, r:6, fill:RED}));
+    const txt = svgEl('text', {x:node.x+X0, y: node.row==='top' ? node.y-14 : node.y+26, class:'node-label', 'text-anchor':'middle'});
+    txt.textContent = node.label;
+    svg.appendChild(txt);
+    expand(node.x+X0-14, node.y-40); expand(node.x+X0+14, node.y+40);
+  }
+
+  function labelWithBg(x, y, text){
+    const w = 9*String(text).length + 8;
+    svg.appendChild(svgEl('rect', {x:x-w/2, y:y-10, width:w, height:18, rx:3, class:'num-bg'}));
+    const el = svgEl('text', {x, y:y+4, class:'num-label', 'text-anchor':'middle'});
+    el.textContent = text;
+    svg.appendChild(el);
+    expand(x-w/2, y-10); expand(x+w/2, y+10);
+  }
+
+  function queueCurve(a, b, row){
+    animQueue.push(()=>{
+      edgeCount++; counts[row === 'top' ? 'top' : 'bottom']++;
+      const x1 = a.x+X0, x2 = b.x+X0, y = a.y;
+      const r = Math.abs(x2-x1)/2, cx = (x1+x2)/2;
+      const apexY = row==='top' ? y - r : y + r;
+      if (artMode) {
+        const arc = svgEl('path', {d:`M ${x1} ${y} A ${r} ${r} 0 0 ${row==='top'?1:0} ${x2} ${y}`, fill:'none', class:'art-arc', 'data-t':artT(b.order)});
+        svg.appendChild(arc); styleArt(arc);
+        expand(x1, y); expand(x2, apexY);
+        updateFormula();
+        return;
+      }
+      svg.appendChild(svgEl('path', {
+        d:`M ${x1} ${y} A ${r} ${r} 0 0 ${row==='top'?1:0} ${x2} ${y}`,
+        stroke:GRAY, fill:'none', 'stroke-width':1.4, opacity:0.85
+      }));
+      expand(x1, y); expand(x2, apexY);
+      labelWithBg(cx, row==='top' ? apexY-10 : apexY+14, edgeCount);
+      updateFormula();
+    });
+  }
+
+  function queueCross(newNode, target){
+    animQueue.push(()=>{
+      edgeCount++; counts.cross++;
+      const nx = newNode.x+X0, ny = newNode.y, tx = target.x+X0, ty = target.y;
+      if (artMode) {
+        const ln = svgEl('line', {x1:tx,y1:ty,x2:nx,y2:ny, class:'art-cross', 'data-t':artT(newNode.order)});
+        svg.appendChild(ln); styleArt(ln);
+        expand(nx, ny); expand(tx, ty);
+        updateFormula();
+        return;
+      }
+      svg.appendChild(svgEl('line', {x1:tx,y1:ty,x2:nx,y2:ny, stroke:GRAY,'stroke-width':1.2, opacity:0.6}));
+
+      // Green/teal extension = exact continuation of the gray line (same slope);
+      // only its LENGTH grows until its number clears all previous numbers.
+      let dx = nx - tx, dy = ny - ty;
+      const len = Math.hypot(dx,dy); dx/=len; dy/=len;
+      let L = L_START, ex, ey;
+      while (true) {
+        ex = nx + dx*L; ey = ny + dy*L;
+        if (placedExt.every(p => Math.hypot(ex-p.x, ey-p.y) >= MIN_DIST) || L >= L_MAX) break;
+        L += L_STEP;
+      }
+      placedExt.push({x:ex, y:ey});
+      svg.appendChild(svgEl('line', {x1:nx,y1:ny,x2:ex,y2:ey, stroke:TEAL,'stroke-width':1.6, opacity:0.85, class:'ext-line'}));
+      expand(nx, ny); expand(tx, ty); expand(ex, ey);
+      labelWithBg(ex, ey, edgeCount);
+      updateFormula();
+    });
+  }
+
+  function addNode(){
+    const row = topNodes.length <= botNodes.length ? 'top' : 'bottom';
+    const arr = row==='top' ? topNodes : botNodes;
+    const other = row==='top' ? botNodes : topNodes;
+    const order = letterCounter;
+    const node = { label: nextLabel(), order, row, x: arr.length*SPACING, y: row==='top'?TOP_Y:BOT_Y };
+
+    drawPoint(node);                         // point appears immediately
+    other.forEach(tgt => queueCross(node, tgt));   // then edges are staggered / stepped
+    arr.forEach(s => queueCurve(s, node, row));
+    arr.push(node);
+    fitViewBox();
+    updateStepButton();
+  }
+
+  // Two groups of chosen sizes a (top) and b (bottom), counted in stages:
+  // straight lines first, then arcs of group A, then arcs of group B.
+  function buildGroups(a, b){
+    resetAll();
+    groupsExpected = {a, b};
+    const longest = Math.max(a, b);
+    const mkRow = (count, row) => {
+      const off = (longest - count) * SPACING / 2;
+      const nodes = [];
+      for (let k = 0; k < count; k++) {
+        const order = letterCounter;
+        const node = { label: nextLabel(), order, row, x: off + k*SPACING, y: row==='top' ? TOP_Y : BOT_Y };
+        drawPoint(node);
+        nodes.push(node);
+      }
+      return nodes;
+    };
+    topNodes = mkRow(a, 'top');
+    botNodes = mkRow(b, 'bottom');
+    for (let i = 0; i < a; i++)
+      for (let j = 0; j < b; j++)
+        ((i + j) % 2 === 0) ? queueCross(topNodes[i], botNodes[j]) : queueCross(botNodes[j], topNodes[i]);
+    for (let i = 0; i < a; i++) for (let j = i + 1; j < a; j++) queueCurve(topNodes[i], topNodes[j], 'top');
+    for (let i = 0; i < b; i++) for (let j = i + 1; j < b; j++) queueCurve(botNodes[i], botNodes[j], 'bottom');
+    fitViewBox();
+    updateFormula();
+    maybeAutoPlay();
+  }
+
+  function updateStepButton(){
+    const btn = document.getElementById('nextBtn');
+    if (stepMode() && animQueue.length > 0) {
+      btn.style.display = 'inline-block';
+      btn.textContent = `${t('nextConnection')} (${animQueue.length})`;
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+
+  function runQueue(){
+    if (animating) return;
+    animating = true;
+    // Small diagrams: relaxed pace (130 ms/connection). Large diagrams: faster,
+    // so the whole build takes roughly 8 seconds at most.
+    const total = Math.max(1, animQueue.length);
+    const delay = Math.max(8, Math.min(130, Math.round(8000 / total)));
+    const perTick = Math.max(1, Math.ceil(total * delay / 8000));
+    (function loop(){
+      if (stepMode() || animQueue.length === 0) { animating = false; fitViewBox(); updateStepButton(); return; }
+      for (let i = 0; i < perTick && animQueue.length > 0; i++) animQueue.shift()();
+      fitViewBox();
+      updateStepButton();
+      setTimeout(loop, delay);
+    })();
+  }
+
+  function maybeAutoPlay(){ if (!stepMode()) runQueue(); else updateStepButton(); }
+
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    if (animQueue.length === 0) return;
+    animQueue.shift()();
+    fitViewBox();
+    updateStepButton();
+  });
+  document.getElementById('toggleStep').addEventListener('change', ()=>{
+    updateStepButton();
+    if (!stepMode()) runQueue();
+  });
+
+  // ---------------------------------------------------------------
+  // UI WIRING
+  // ---------------------------------------------------------------
+  document.querySelectorAll('.hs-tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.hs-tab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.hs-panel').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+      document.getElementById('hsApp').setAttribute('data-mode', tab.dataset.tab);
+      const toArt = tab.dataset.tab === 'art';
+      if (toArt !== artMode) {
+        artMode = toArt;
+        resetAll();
+        applyArtBg();
+        document.getElementById('togglesRow').style.display = artMode ? 'none' : 'flex';
+      }
+    });
+  });
+
+  document.getElementById('addBtn').addEventListener('click', ()=>{ addNode(); maybeAutoPlay(); });
+
+  document.getElementById('solveBtn').addEventListener('click', ()=>{
+    const mode = document.querySelector('input[name=solveMode]:checked').value;
+    const val = parseInt(document.getElementById('totalInput').value, 10);
+    const msg = document.getElementById('solveMsg');
+    msg.textContent = '';
+    if (!val || val < 1) { msg.textContent = t('errNoInput'); return; }
+
+    let target;
+    if (mode === 'people') {
+      if (val < 2) { msg.textContent = t('errMinPeople'); return; }
+      target = val;
+    } else {
+      const n = (1 + Math.sqrt(1 + 8*val)) / 2;
+      if (Math.abs(n - Math.round(n)) > 1e-9) {
+        const lo = Math.floor(n), hi = Math.ceil(n);
+        msg.textContent = t('errInvalidTotal')(lo, lo*(lo-1)/2, hi, hi*(hi-1)/2);
+        return;
+      }
+      target = Math.round(n);
+    }
+    resetAll();
+    for (let i = 0; i < target; i++) addNode();
+    maybeAutoPlay();
+  });
+
+  document.getElementById('resetBtn1').addEventListener('click', resetAll);
+  document.getElementById('resetBtn2').addEventListener('click', resetAll);
+
+  document.getElementById('toggleLetters').addEventListener('change', e=>{
+    svg.parentElement.classList.toggle('hide-letters', !e.target.checked);
+  });
+  document.getElementById('toggleNumbers').addEventListener('change', e=>{
+    svg.parentElement.classList.toggle('hide-numbers', !e.target.checked);
+  });
+
+  document.getElementById('groupsBuildBtn').addEventListener('click', ()=>{
+    const a = parseInt(document.getElementById('groupA').value, 10);
+    const b = parseInt(document.getElementById('groupB').value, 10);
+    const msg = document.getElementById('groupsMsg');
+    msg.textContent = '';
+    if (!a || !b || a < 1 || b < 1) { msg.textContent = t('errGroups'); return; }
+    buildGroups(a, b);
+  });
+  document.getElementById('resetBtn4').addEventListener('click', resetAll);
+
+  // ---------------------------------------------------------------
+  // ART MODE CONTROLS
+  // ---------------------------------------------------------------
+  document.getElementById('artBuildBtn').addEventListener('click', ()=>{
+    const n = parseInt(document.getElementById('artInput').value, 10);
+    const msg = document.getElementById('artMsg');
+    msg.textContent = '';
+    if (!n || n < 1) { msg.textContent = t('errNoInput'); return; }
+    if (n < 2) { msg.textContent = t('errMinPeople'); return; }
+    resetAll();
+    artTotal = n;
+    for (let i = 0; i < n; i++) addNode();
+    while (animQueue.length) animQueue.shift()();   // art is drawn instantly
+    fitViewBox(); updateFormula(); updateStepButton();
+  });
+  document.getElementById('resetBtn3').addEventListener('click', resetAll);
+  document.getElementById('artPalette').addEventListener('change', restyleAll);
+  document.getElementById('artWeight').addEventListener('input', restyleAll);
+  document.getElementById('artBg').addEventListener('change', applyArtBg);
+  document.getElementById('artShowLines').addEventListener('change', e=>{
+    svg.parentElement.classList.toggle('hide-art-cross', !e.target.checked);
+  });
+  document.getElementById('artShowArcs').addEventListener('change', e=>{
+    svg.parentElement.classList.toggle('hide-art-arc', !e.target.checked);
+  });
+
+  // ---------------------------------------------------------------
+  // EXPORT (SVG + PNG) with signature / watermark at the bottom
+  // ---------------------------------------------------------------
+  function buildExportSvg(){
+    const vb = svg.getAttribute('viewBox').split(' ').map(Number);   // [x, y, w, h]
+    const withSig = !artMode || document.getElementById('artSignature').checked;
+    const SIG = withSig ? 44 : 0;
+    const bgColor = artMode ? ART_BGS[document.getElementById('artBg').value] : '#ffffff';
+    const dark = artMode && document.getElementById('artBg').value === 'night';
+
+    const clone = svg.cloneNode(true);
+    clone.setAttribute('xmlns', svgNS);
+    clone.setAttribute('width', Math.round(vb[2]));
+    clone.setAttribute('height', Math.round(vb[3] + SIG));
+    clone.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3] + SIG}`);
+
+    if (bgColor) {
+      const bg = document.createElementNS(svgNS, 'rect');
+      bg.setAttribute('x', vb[0]); bg.setAttribute('y', vb[1]);
+      bg.setAttribute('width', vb[2]); bg.setAttribute('height', vb[3] + SIG);
+      bg.setAttribute('fill', bgColor);
+      clone.insertBefore(bg, clone.firstChild);
+    }
+
+    const style = document.createElementNS(svgNS, 'style');
+    style.textContent =
+      `.node-label{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:20px;fill:${RED};}` +
+      `.num-label{font-family:'Courier New',monospace;font-size:13px;fill:${TEAL};}` +
+      `.num-bg{fill:#fff;opacity:0.88;}`;
+    clone.insertBefore(style, clone.firstChild);
+
+    if (!document.getElementById('toggleLetters').checked)
+      clone.querySelectorAll('.node-label').forEach(e=>e.remove());
+    if (!document.getElementById('toggleNumbers').checked)
+      clone.querySelectorAll('.num-label,.num-bg,.ext-line').forEach(e=>e.remove());
+    if (artMode) {
+      if (!document.getElementById('artShowLines').checked) clone.querySelectorAll('.art-cross').forEach(e=>e.remove());
+      if (!document.getElementById('artShowArcs').checked) clone.querySelectorAll('.art-arc').forEach(e=>e.remove());
+    }
+
+    if (withSig) {
+      const wm = document.createElementNS(svgNS, 'text');
+      wm.setAttribute('x', vb[0] + vb[2]/2); wm.setAttribute('y', vb[1] + vb[3] + 28);
+      wm.setAttribute('text-anchor', 'middle');
+      wm.setAttribute('font-family', 'Georgia, serif');
+      wm.setAttribute('font-style', 'italic');
+      wm.setAttribute('font-size', '14');
+      wm.setAttribute('fill', dark ? '#aab0c0' : '#8a8f8a');
+      wm.textContent = t('watermark');
+      clone.appendChild(wm);
+    }
+    return { text: new XMLSerializer().serializeToString(clone), w: Math.round(vb[2]), h: Math.round(vb[3] + SIG) };
+  }
+
+  function downloadBlob(blob, name){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    const out = buildExportSvg();
+    downloadBlob(new Blob([out.text], {type:'image/svg+xml;charset=utf-8'}), artMode ? 'bipartite-arc-art.svg' : 'handshake-diagram.svg');
+  });
+
+  document.getElementById('exportPngBtn').addEventListener('click', ()=>{
+    const out = buildExportSvg();
+    const scale = Math.min(3, 4000 / Math.max(out.w, out.h));   // PNG is a quick-share copy; SVG stays the sharp master
+    const img = new Image();
+    const url = URL.createObjectURL(new Blob([out.text], {type:'image/svg+xml;charset=utf-8'}));
+    img.onload = ()=>{
+      const c = document.createElement('canvas');
+      c.width = Math.round(out.w * scale); c.height = Math.round(out.h * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(b => { downloadBlob(b, artMode ? 'bipartite-arc-art.png' : 'handshake-diagram.png'); URL.revokeObjectURL(url); }, 'image/png');
+    };
+    img.src = url;
+  });
+
+  resetAll();
+  applyLanguage('en');
+})();
+</script>
+</body>
+</html>

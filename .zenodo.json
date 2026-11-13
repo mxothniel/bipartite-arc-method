@@ -1,0 +1,24 @@
+{
+  "title": "The Othniel Etienne Bipartite-Arc Method",
+  "upload_type": "software",
+  "description": "<p>A visual method and free interactive web tool for counting pairs (such as handshakes) by splitting nodes into two parallel rows joined by straight lines (between rows) and arcs (within a row). It separates the counting into clear stages and shows why n people produce n(n-1)/2 connections.</p><p>Designed and developed by Othniel Etienne for Fondasyon Ann Inove, as an open educational initiative made in Haiti. Available in English, French, Haitian Creole and Spanish. Code under the MIT License; method, text and diagrams under CC BY 4.0.</p>",
+  "creators": [
+    {
+      "name": "Etienne, Othniel",
+      "affiliation": "Fondasyon Ann Inove",
+	  "orcid": "0009-0005-4021-2301"
+    }
+  ],
+  "license": "cc-by-4.0",
+  "keywords": [
+    "handshake problem",
+    "combinatorics",
+    "bipartite graph",
+    "arc diagram",
+    "mathematics education",
+    "visual learning",
+    "Haiti",
+    "open educational resource"
+  ],
+  "language": "eng"
+}
