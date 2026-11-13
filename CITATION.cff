@@ -3,6 +3,7 @@ message: "If you use this method or software, please cite it as below."
 title: "The Othniel Etienne Bipartite-Arc Method"
 type: software
 version: 1.0.0
+doi: 10.5281/zenodo.24197454
 date-released: 2026-11-12
 authors:
   - family-names: "Etienne"
