@@ -5,7 +5,7 @@
 Designed and developed by **Othniel Etienne** for **Fondasyon Ann Inove**, as an open educational initiative made in Haiti.
 
 - **Live app:** https://mxothniel.github.io/bipartite-arc-method/
-- **DOI:** [10.5281/zenodo.XXXXXXX](https://doi.org/10.5281/zenodo.XXXXXXX) *(replace after your first Zenodo release)*
+- **DOI:** [10.5281/zenodo.24197454](https://doi.org/10.5281/zenodo.24197454) *(replace after your first Zenodo release)*
 - **Languages:** English, Français, Kreyòl ayisyen, Español
 
 ## The originality
@@ -46,7 +46,7 @@ The method fits problems where pairs fall into two categories: pairs inside one 
 
 ## Cite this work
 
-> Etienne, O. (2026). *The Othniel Etienne Bipartite-Arc Method* (Version 1.0.0) [Software]. Fondasyon Ann Inove. https://doi.org/10.5281/zenodo.XXXXXXX
+> Etienne, O. (2026). *The Othniel Etienne Bipartite-Arc Method* (Version 1.0.0) [Software]. Fondasyon Ann Inove. https://doi.org/10.5281/zenodo.24197454
 
 GitHub's "Cite this repository" button uses `CITATION.cff`.
 
